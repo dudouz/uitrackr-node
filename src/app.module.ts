@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -11,9 +13,14 @@ import { Tracking } from './trackings/entities/tracking.entity';
 import { Score } from './scores/entities/score.entity';
 import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    AuthModule,
     TrackingsModule,
     UsersModule,
     SitesModule,
@@ -22,14 +29,13 @@ import { AuthModule } from './auth/auth.module';
       type: 'mysql',
       host: 'localhost',
       port: 3306,
-      username: 'root',
-      password: 'secret',
-      database: 'uitrackr',
-      logging: true,
+      username: process.env.MYSQL_USER,
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DATABASE,
+      // logging: true,
       synchronize: true,
       entities: [User, Site, Tracking, Score],
     }),
-    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
