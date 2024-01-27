@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateTrackingDto } from './dto/create-tracking.dto';
+import { CreateTrackingInput } from './dto/create-tracking.dto';
 import { UpdateTrackingDto } from './dto/update-tracking.dto';
 import { Tracking } from './entities/tracking.entity';
-import { CreateSiteDto } from 'src/sites/dto/create-site.dto';
 import { Site } from 'src/sites/entities/site.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { SitesService } from 'src/sites/sites.service';
+import { CreateSiteDto } from 'src/sites/dto/create-site.dto';
 
 @Injectable()
 export class TrackingsService {
@@ -21,33 +21,34 @@ export class TrackingsService {
     @Inject(SitesService)
     private sitesService: SitesService,
   ) {}
-  async create(createTrackingDto: CreateTrackingDto) {
+  async create(input: CreateTrackingInput) {
     let site: Site;
 
     const user = await this.userRepository.findOne({
       where: {
-        id: createTrackingDto.user,
+        id: input.user,
       },
     });
 
     site = await this.siteRepository
       .findOne({
         where: {
-          url: createTrackingDto.site_url,
+          url: input.url,
+          user: user,
         },
       })
       .then((site) => site);
 
     if (!site) {
       const createSiteInput: CreateSiteDto = {
-        url: createTrackingDto.site_url,
-        user,
+        url: input.url,
+        user: user,
       };
 
       try {
         site = await this.sitesService.create(createSiteInput);
       } catch (error) {
-        return error;
+        throw error;
       }
     }
 
@@ -59,7 +60,7 @@ export class TrackingsService {
     try {
       await this.trackingRepository.save(tracking);
     } catch (error) {
-      return error;
+      throw error;
     }
 
     return `Tracking for url: ${tracking.site.url} added successfully. Status: ${tracking.status}`;

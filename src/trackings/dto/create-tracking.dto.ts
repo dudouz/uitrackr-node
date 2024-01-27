@@ -1,8 +1,13 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreateTrackingDto {
   @IsString()
-  site_url: string;
-  @IsNumber()
+  url: string;
+}
+
+export class CreateTrackingInput {
+  @IsString()
   user: string;
+  @IsString()
+  url: string;
 }
