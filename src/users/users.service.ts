@@ -39,10 +39,6 @@ export class UsersService {
     return `User ${user.email} created successfully, you can login now`;
   }
 
-  findAll() {
-    return `This action returns all users`;
-  }
-
   findOne(email: string) {
     return this.userRepository.findOne({
       where: {
