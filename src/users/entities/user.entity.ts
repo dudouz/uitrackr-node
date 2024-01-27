@@ -1,5 +1,8 @@
 import { Site } from 'src/sites/entities/site.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+
+const saltRounds = 10;
 
 interface CreateUserCommand {
   name: string;
@@ -41,5 +44,16 @@ export class User {
     newUser.plan = 'free';
 
     return newUser;
+  }
+
+  static async hashPassword(password: string) {
+    return await bcrypt.hash(password, saltRounds);
+  }
+
+  static async comparePassword(
+    password: string,
+    hash: string,
+  ): Promise<boolean> {
+    return await bcrypt.compare(password, hash);
   }
 }

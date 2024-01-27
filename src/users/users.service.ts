@@ -12,7 +12,6 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
   async create(createUserDto: CreateUserDto) {
-    // check if there is any user and prevent creation
     const user_exists = await this.userRepository
       .findOne({
         where: {
@@ -25,9 +24,11 @@ export class UsersService {
       return 'User already exists';
     }
 
+    const encrypted_password = await User.hashPassword(createUserDto.password);
+
     const user = User.create({
       email: createUserDto.email,
-      password: createUserDto.password,
+      password: encrypted_password,
       name: createUserDto.name,
       plan: 'free',
       role: 'user',
@@ -35,7 +36,7 @@ export class UsersService {
 
     await this.userRepository.save(user);
 
-    return user;
+    return `User ${user.email} created successfully, you can login now`;
   }
 
   findAll() {

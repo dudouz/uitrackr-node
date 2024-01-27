@@ -1,15 +1,12 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Inject,
   Post,
-  Req,
-  UseGuards,
 } from '@nestjs/common';
-import { AuthGuard, Public } from './auth.guard';
+import { Public } from './auth.guard';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
@@ -32,6 +29,7 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.CREATED)
+  @Public()
   @Post('register')
   signUp(@Body() body: CreateUserDto) {
     return this.usersService.create(body);
@@ -44,15 +42,10 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @Public()
   @Post('forgot-password')
   forgotPassword(@Body() body: ForgotPasswordDto) {
     return this.authService.forgotPassword(body.email);
-  }
-
-  @UseGuards(AuthGuard)
-  @Get('me')
-  me(@Req() request: Request) {
-    return request['user'];
   }
 
   //   @HttpCode(HttpStatus.OK)
