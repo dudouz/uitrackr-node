@@ -5,6 +5,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -32,7 +33,10 @@ export class Tracking {
   @ManyToOne(() => Site)
   site: Site;
 
-  @OneToOne(() => Score)
+  @OneToOne(() => Score, {
+    cascade: true,
+  })
+  @JoinColumn()
   score: Score;
 
   @Column()

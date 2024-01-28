@@ -1,21 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { CreateScoreDto } from './dto/create-score.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Tracking } from 'src/trackings/entities/tracking.entity';
+import { Repository } from 'typeorm';
+import { Score } from './entities/score.entity';
 
 @Injectable()
 export class ScoresService {
-  create(createScoreDto: CreateScoreDto) {
-    return 'This action adds a new score';
-  }
+  constructor(
+    @InjectRepository(Score)
+    private scoreRepository: Repository<Score>,
+    @InjectRepository(Tracking)
+    private trackingRepository: Repository<Tracking>,
+  ) {}
+  async create(createScoreDto: CreateScoreDto) {
+    const tracking = await this.trackingRepository.findOne({
+      where: {
+        id: createScoreDto.trackingId,
+      },
+    });
 
-  findAll() {
-    return `This action returns all scores`;
-  }
+    const score = Score.create(tracking, createScoreDto);
 
-  findOne(id: number) {
-    return `This action returns a #${id} score`;
-  }
+    const result = await this.scoreRepository.save(score);
 
-  remove(id: number) {
-    return `This action removes a #${id} score`;
+    return result;
   }
 }

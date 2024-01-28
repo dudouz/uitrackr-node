@@ -37,12 +37,9 @@ export class TrackingsController {
     return this.trackingsService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateTrackingDto: UpdateTrackingDto,
-  ) {
-    return this.trackingsService.update(+id, updateTrackingDto);
+  @Patch()
+  update(@Body() updateTrackingDto: UpdateTrackingDto) {
+    return this.trackingsService.update(updateTrackingDto);
   }
 
   @Delete(':id')

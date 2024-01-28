@@ -7,10 +7,11 @@ import { Score } from 'src/scores/entities/score.entity';
 import { Site } from 'src/sites/entities/site.entity';
 import { User } from 'src/users/entities/user.entity';
 import { SitesService } from 'src/sites/sites.service';
+import { ScoresService } from 'src/scores/scores.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Tracking, Site, Score, User])],
   controllers: [TrackingsController],
-  providers: [TrackingsService, SitesService],
+  providers: [TrackingsService, SitesService, ScoresService],
 })
 export class TrackingsModule {}
