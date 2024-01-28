@@ -24,7 +24,7 @@ export class TrackingsService {
     @Inject(ScoresService)
     private scoresService: ScoresService,
   ) {}
-  async create(input: CreateTrackingInput) {
+  async create(input: CreateTrackingInput, token: string) {
     let site: Site;
 
     const user = await this.userRepository.findOne({
@@ -66,6 +66,8 @@ export class TrackingsService {
       throw error;
     }
 
+    await this.sendScoreRequest(tracking, token);
+
     return `Tracking for url: ${tracking.site.url} added successfully. Status: ${tracking.status}`;
   }
 
@@ -75,6 +77,20 @@ export class TrackingsService {
 
   findOne(id: number) {
     return `This action returns a #${id} tracking`;
+  }
+
+  private async sendScoreRequest(tracking: Tracking, token: string) {
+    fetch(process.env.SERVERLESS_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        id: tracking.id,
+        url: tracking.site.url,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: token,
+      },
+    });
   }
 
   async update(updateTrackingDto: UpdateTrackingDto) {
